@@ -9,7 +9,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # ساخت مدل با پرامپت سیستم (اینجا اضافه می‌شه)
 model = genai.GenerativeModel(
-    'gemini-1.5-flash',
+    'gemini-2.5-flash',
     system_instruction="تو یک دستیار مفید و باهوش هستی که به زبان فارسی پاسخ می‌دی."  # پرامپت سیستم خودت رو بنویس
 )
 
