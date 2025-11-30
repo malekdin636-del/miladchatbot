@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💬 چت‌بات دانشجویی — رابط کاربری شیک (با Gemini)</title>
+    <title>💬 چت‌بات دانشجویی</title>
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- فونت گوگل (اختیاری: برای ظاهری مدرن‌تر) -->
@@ -189,8 +189,8 @@
         const summarizeBtn = document.getElementById('summarize-btn');
         
         // --- رفع خطای API: تعریف آدرس بک‌اند اصلی ---
-        // این آدرس به تابع get_reply_user در orchestrator.py اشاره دارد.
-        const API_URL = "/api/get_reply_user"; 
+        // ✅ آدرس اصلاح شده برای تطابق با روت /reply در main.py
+        const API_URL = "/reply"; 
 
         // توجه: این API_KEY باید در محیط اجرای نهایی توسط Canvas تامین شود.
         const API_KEY = ""; 
@@ -224,7 +224,7 @@
             // 'WAVE' identifier
             writeString(view, 8, 'WAVE');
             // 'fmt ' chunk identifier
-            writeString(view, 12, 'fmt ');
+            view.setUint32(12, 0x20746d66, false); // 'fmt '
             // fmt chunk length (16 for PCM)
             view.setUint32(16, 16, true);
             // sample format (1 for PCM)
@@ -421,11 +421,6 @@
             
             // آخرین پیام ربات
             const lastMessageElement = botMessages[botMessages.length - 1];
-            // برای استخراج متن خالص، نیازی به حذف دکمه TTS در ساختار جدید نیست
-            // اما باید دکمه TTS و حباب پیام را در نظر گرفت.
-            
-            // اگر از ساختار جدید استفاده شود، باید به parent wrapper برویم
-            const lastWrapper = lastMessageElement.parentElement; // bot-message-wrapper
             
             // متن خالص حباب پیام را استخراج کنید
             const textContent = lastMessageElement.innerHTML;
@@ -455,7 +450,6 @@
 
             try {
                 // 3. ارسال درخواست به بک‌اند (API چت اصلی)
-                // توجه: API_URL اکنون تعریف شده است: /api/get_reply_user
                 const response = await fetchWithRetry(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
