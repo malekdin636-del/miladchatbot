@@ -122,73 +122,79 @@ def reply(data: UserMessage):
     return {"response": response_text}
 
 # ۳. روت API جدید برای TTS (تبدیل متن به گفتار)
+from fastapi.responses import StreamingResponse
+
 @app.post("/tts")
-async def generate_tts(data: TTSRequest):
+async def generate_tts_stream(data: TTSRequest):
     global tts_model_client, SETUP_ERROR
 
-    if tts_model_client is None or SETUP_ERROR:
-        raise HTTPException(status_code=500, detail=f"TTS model setup failed: {SETUP_ERROR}")
+    if not tts_model_client or SETUP_ERROR:
+        raise HTTPException(status_code=500, detail=str(SETUP_ERROR))
 
-    # محدودیت TTS: 300 کاراکتر
     text_to_speak = data.text[:300]
 
-    tts_payload = {
-        "contents": [{
-            "parts": [{ "text": text_to_speak }]
-        }],
-        "generationConfig": {
-            "responseModalities": ["AUDIO"],
-            "speechConfig": {
-                "voiceConfig": {
-                    "prebuiltVoiceConfig": { 
-                        "voiceName": data.voice 
+    try:
+        response = tts_model_client.generate_content(
+            contents=[text_to_speak],
+            generation_config={
+                "response_modalities": ["AUDIO"],
+                "speech_config": {
+                    "voice_config": {
+                        "prebuilt_voice_config": {
+                            "voice_name": data.voice
+                        }
                     }
                 }
-            }
-        }
-    }
-
-    try:
-        # ارسال مستقیم محموله به API
-        response = tts_model_client.generate_content(**tts_payload, tools=[])
-        
-        # --- اعمال بررسی‌های ساختاری قوی و دقیق ---
-        audio_part = None
-        if (response.candidates and 
-            response.candidates[0].content and 
-            response.candidates[0].content.parts):
-            
-            # جستجو برای بخشی که شامل inlineData است
-            for part in response.candidates[0].content.parts:
-                if hasattr(part, 'inlineData') and part.inlineData:
-                    audio_part = part.inlineData
-                    break
-
-        if not audio_part:
-            print("TTS structure error: Inline audio data is missing in the response.")
-            raise HTTPException(status_code=500, 
-                                detail="TTS model returned an empty or invalid audio structure. Check model safety settings.")
-
-        if audio_part.mimeType != "audio/L16;rate=24000":
-            # این بررسی مهم است
-            raise HTTPException(status_code=500, detail=f"Invalid audio mimeType: {audio_part.mimeType}")
-
-        pcm_data_base64 = audio_part.data
-        pcm_data_bytes = base64.b64decode(pcm_data_base64)
-        wav_bytes = pcm_to_wav(pcm_data_bytes, sample_rate=24000)
-
-        # ارسال فایل WAV به صورت بیس64 در JSON
-        return JSONResponse(
-            content={"audio_data": base64.b64encode(wav_bytes).decode('utf-8')},
-            media_type="application/json"
+            },
+            stream=True
         )
 
+        sample_rate = 24000
+        num_channels = 1
+        sample_width = 2
+
+        header_sent = False
+        total_pcm = 0
+
+        async def audio_stream():
+            nonlocal header_sent, total_pcm
+            for chunk in response:
+                if not chunk or not chunk.candidates:
+                    continue
+
+                part = chunk.candidates[0].content.parts[0]
+                if not hasattr(part, "inline_data"):
+                    continue
+
+                pcm = base64.b64decode(part.inline_data.data)
+                total_pcm += len(pcm)
+
+                if not header_sent:
+                    # WAV header only once!
+                    import struct
+                    wav_header = b'RIFF' + struct.pack('<I', 36 + 99999999) + b'WAVE'
+                    wav_header += b'fmt ' + struct.pack('<I', 16)
+                    wav_header += struct.pack('<H', 1)
+                    wav_header += struct.pack('<H', num_channels)
+                    wav_header += struct.pack('<I', sample_rate)
+                    wav_header += struct.pack('<I', sample_rate * num_channels * sample_width)
+                    wav_header += struct.pack('<H', num_channels * sample_width)
+                    wav_header += struct.pack('<H', sample_width * 8)
+                    wav_header += b'data' + struct.pack('<I', 99999999)
+
+                    yield wav_header
+                    header_sent = True
+
+                yield pcm  
+
+        return StreamingResponse(audio_stream(), media_type="audio/wav",
+                                 headers={
+                                     "Transfer-Encoding": "chunked",
+                                     "Connection": "keep-alive"
+                                 })
+
     except Exception as e:
-        print(f"Error during TTS generation: {e}")
-        # برای اشکال‌زدایی بهتر در کنسول
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"TTS processing failed due to an unexpected error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"TTS Stream failed: {e}")
 
 
 # ۴. روت API جدید برای خلاصه‌سازی متن
