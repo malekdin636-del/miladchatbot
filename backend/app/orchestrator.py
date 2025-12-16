@@ -46,7 +46,8 @@ def get_reply_user(user_text: str) -> str:
     global client, SETUP_ERROR
     
     if not client or SETUP_ERROR:
-        return f"⚠️ خطای داخلی سیستم: {SETUP_ERROR}"
+        # اگر خطا در تنظیمات اولیه بود، پیغام خطا را به‌وضوح برمی‌گرداند.
+        return f"⚠️ خطای داخلی سیستم! تنظیمات API ناقص است: {SETUP_ERROR}"
 
     try:
         # دریافت تاریخ و ساعت فعلی به وقت تهران
@@ -90,4 +91,4 @@ def get_reply_user(user_text: str) -> str:
         # در صورت بروز خطا در فراخوانی API، پیام مناسب نمایش داده شود
         error = str(e)
         print(f"❌ خطای API: {error}")
-        return f"⚠️ ببخشید، در حال حاضر در ارتباط با سرور مشکل دارم. خطا: {error}"
+        return f"⚠️ ببخشید، در حال حاضر در ارتباط با سرور مشکل دارم. احتمالاً کلید API شما مشکل دارد یا اعتبار کافی ندارد. خطا: {error}"
