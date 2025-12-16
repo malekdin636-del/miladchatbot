@@ -4,9 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>✨ چت‌بات دانشجویی هوشمند</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -47,7 +45,6 @@
             padding: 14px 20px; 
             border-radius: 1.4rem; 
             line-height: 2; 
-            position: relative;
             max-width: 85%;
             font-size: 1.05rem;
             animation: fadeIn 0.5s ease-out;
@@ -91,23 +88,7 @@
             background: #e6f0ff;
             color: #0b57d0;
             border-color: #0b57d0;
-            transform: translateY(-1px);
         }
-
-        .copy-icon {
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: #8e918f;
-            transition: color 0.3s;
-            position: absolute;
-            bottom: -30px;
-            left: 8px;
-            padding: 6px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .copy-icon:hover { color: #0b57d0; }
 
         .input-area-wrapper {
             background: #f0f4f9;
@@ -145,11 +126,6 @@
             40% { transform: scale(1); }
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         .gradient-text {
             background: linear-gradient(to right, #4285f4, #9b72cb, #d96570);
             -webkit-background-clip: text;
@@ -181,7 +157,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header class="flex items-center justify-between px-6 py-4 bg-[#f0f4f9] z-10 shadow-sm">
         <div class="flex items-center gap-3">
             <span class="text-2xl">✨</span>
@@ -192,9 +167,7 @@
         </button>
     </header>
 
-    <!-- Chat Area -->
     <div id="chat-container" class="main-container overflow-y-auto px-4 pb-4 space-y-6">
-        <!-- Welcome Message -->
         <div class="flex flex-col items-start w-full gap-2 mt-4">
             <div class="bot-message message-bubble">
                 <p class="mb-3 text-lg">👋 سلام! من دستیار هوشمند شما هستم.</p>
@@ -208,7 +181,6 @@
         </div>
     </div>
 
-    <!-- Input Footer -->
     <div class="input-area-wrapper">
         <div class="max-w-3xl mx-auto w-full">
             
@@ -247,7 +219,6 @@
         </div>
     </div>
 
-    <!-- About Modal -->
     <div id="about-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="hideAbout(event)">
         <div class="bg-white rounded-2xl p-7 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
             <h2 class="text-2xl mb-4 gradient-text">درباره چت‌بات</h2>
@@ -271,31 +242,12 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const messageBox = document.getElementById('message-box');
         const aboutModal = document.getElementById('about-modal');
-
-        // === پاسخ ثابت و آماده (اینجا می‌تونی متن دلخواهت رو تغییر بدی) ===
-        const FIXED_BOT_RESPONSE = `این یک **پاسخ آماده و حرفه‌ای** از دستیار هوشمند دانشجویی شماست.
-
-من آماده‌ام تا در موضوعات زیر به شما کمک کنم:
-
-• **ریاضیات و علوم پایه** (معادلات، انتگرال، مشتق، فیزیک، شیمی و ...)
-• **ادبیات و تاریخ** (تحلیل شعر، تاریخ ادبیات فارسی، تاریخ جهان)
-• **برنامه‌نویسی** (پایتون، جاوا، جاوااسکریپت، سی++ و ...)
-• **درس‌های دانشگاهی** (هوش مصنوعی، پایگاه داده، شبکه، الگوریتم و ...)
-
-**نمونه سوالات قابل پرسش:**
-- فرمول محاسبه انتگرال معین یک تابع چندجمله‌ای چیست؟
-- مراحل اصلی انقلاب صنعتی را توضیح بده.
-- یک کد پایتون برای الگوریتم مرتب‌سازی سریع (Quick Sort) بنویس.
-- خلاصه فصل سوم کتاب فیزیک هالیدی را بده.
-
-اگر به کد نیاز دارید، لطفاً زبان برنامه‌نویسی را مشخص کنید. منتظر سوالات شما هستم! 🚀`;
 
         function showAbout() { aboutModal.classList.remove('hidden'); }
         function hideAbout(event) {
@@ -307,53 +259,15 @@
             userInput.focus();
         }
 
-        function renderMarkdownAndLinks(text) {
-            let html = text.replace(/\n/g, '<br>');
-            // بولد با رنگ آبی
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#0b57d0; font-weight: bold;">$1</strong>');
-            // لینک‌ها
-            const urlRegex = /(https?:\/\/[^\s<>]+)/g;
-            return html.replace(urlRegex, (url) => `<a href="${url}" target="_blank" class="text-blue-600 hover:underline font-medium">${url}</a>`);
-        }
-
-        function createCopyButton(text) {
-            const btn = document.createElement('i');
-            btn.className = 'fas fa-copy copy-icon';
-            btn.title = 'کپی متن';
-            btn.onclick = () => {
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.className = 'fas fa-check copy-icon text-green-600';
-                    setTimeout(() => btn.className = 'fas fa-copy copy-icon', 2000);
-                });
-            };
-            return btn;
-        }
-
         function displayMessage(text, sender) {
             const wrapper = document.createElement('div');
             wrapper.className = 'flex flex-col w-full mb-4';
 
             const bubble = document.createElement('div');
             bubble.className = `message-bubble ${sender === 'user' ? 'user-message' : 'bot-message'}`;
-            bubble.innerHTML = renderMarkdownAndLinks(text);
+            bubble.textContent = text; // فقط متن ساده، بدون markdown
 
-            if (sender === 'bot') {
-                const btnContainer = document.createElement('div');
-                btnContainer.className = 'relative';
-                btnContainer.appendChild(createCopyButton(text));
-
-                const summarizeBtn = document.createElement('button');
-                summarizeBtn.className = 'action-chip mt-3';
-                summarizeBtn.innerHTML = '<i class="fas fa-file-alt"></i> خلاصه‌سازی این پیام';
-                summarizeBtn.onclick = () => summarizeText(wrapper, summarizeBtn, text);
-
-                wrapper.appendChild(bubble);
-                wrapper.appendChild(btnContainer);
-                wrapper.appendChild(summarizeBtn);
-            } else {
-                wrapper.appendChild(bubble);
-            }
-
+            wrapper.appendChild(bubble);
             chatContainer.appendChild(wrapper);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
@@ -373,41 +287,17 @@
             sendButton.disabled = true;
             messageBox.classList.remove('hidden');
 
-            try {
-                // تاخیر مصنوعی برای حس واقعی بودن
-                await new Promise(resolve => setTimeout(resolve, 1200 + Math.random() * 800));
+            // شبیه‌سازی تأخیر (مثل وقتی که منتظر پاسخ API هستیم)
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-                // همیشه همین پاسخ ثابت رو نشون بده
-                displayMessage(FIXED_BOT_RESPONSE, 'bot');
+            // اینجا هیچ پاسخی از بات نمایش داده نمی‌شود
+            // اگر بعداً API اضافه کردی، اینجا کد فراخوانی API رو بذار
 
-            } catch (err) {
-                console.error(err);
-                displayMessage('⚠️ خطا در ارتباط. لطفاً دوباره تلاش کنید.', 'bot');
-            } finally {
-                isSending = false;
-                userInput.disabled = false;
-                sendButton.disabled = false;
-                messageBox.classList.add('hidden');
-                userInput.focus();
-            }
-        }
-
-        function summarizeText(wrapper, button, originalText) {
-            if (originalText.length < 50) {
-                displayMessage('⚠️ متن خیلی کوتاه است برای خلاصه‌سازی.', 'bot');
-                return;
-            }
-
-            button.disabled = true;
-            const origText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال خلاصه‌سازی...';
-
-            setTimeout(() => {
-                const summary = "📝 **خلاصه:** این دستیار هوشمند آماده کمک به شما در درس‌های دانشگاهی، ریاضیات، برنامه‌نویسی و موضوعات آکادمیک است. می‌توانید سوالات تشریحی، مسائل ریاضی یا درخواست کد بنویسید.";
-                displayMessage(summary, 'bot');
-                button.innerHTML = origText;
-                button.disabled = false;
-            }, 1800);
+            isSending = false;
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            messageBox.classList.add('hidden');
+            userInput.focus();
         }
 
         document.addEventListener('keydown', (e) => {
