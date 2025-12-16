@@ -3,241 +3,282 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>✨ چت‌بات دانشجویی هوشمند</title>
+    <title>🤖 دستیار هوشمند دانشجویی</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- Rubik Font for better Farsi/Arabic display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'B Titr Bold';
-            src: url('B Titr Bold_0.ttf') format('truetype');
-            font-weight: bold;
-            font-style: normal;
+        /* تنظیم فونت اصلی */
+        * {
+            font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-
-        @font-face {
-            font-family: 'Vazirmatn';
-            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Regular.woff2') format('woff2');
-            font-weight: normal;
-        }
-
+        
         body { 
-            font-family: 'B Titr Bold', 'Vazirmatn', Tahoma, sans-serif; 
-            background-color: #f0f4f9;
-            color: #1f1f1f;
+            background: #0f0f0f;
+            overflow: hidden;
+        }
+
+        /* پس‌زمینه گرادیانت در هدر */
+        .gradient-bg {
+            background: linear-gradient(135deg, #4c51bf 0%, #6a3299 100%); /* بنفش عمیق‌تر برای تم دانشجویی */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* انیمیشن چرخش پس‌زمینه (استایل بصری) */
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .chat-container-main { 
+            background: #1a1a1a;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
-        
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
+
+        /* حباب پیام‌ها */
+        .message-bubble { 
+            max-width: 75%; 
+            padding: 14px 18px; 
+            border-radius: 16px; 
+            line-height: 1.6; 
+            word-wrap: break-word; 
+            animation: fadeInUp 0.3s ease-out;
             position: relative;
         }
 
-        .message-bubble { 
-            padding: 14px 20px; 
-            border-radius: 1.4rem; 
-            line-height: 2; 
-            max-width: 85%;
-            font-size: 1.05rem;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .user-message { 
-            background-color: #e7effe;
-            color: #000;
-            margin-left: auto; 
-            border-bottom-left-radius: 6px;
+            background: linear-gradient(135deg, #4c51bf 0%, #6a3299 100%);
+            color: #fff; 
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 14px rgba(76, 81, 191, 0.3);
         }
 
         .bot-message { 
-            background-color: #ffffff;
-            color: #1f1f1f;
-            margin-right: auto; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-bottom-right-radius: 6px;
+            background: #2a2a2a;
+            color: #e5e5e5; 
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #3a3a3a;
         }
 
-        .action-chip {
-            font-size: 0.9rem;
-            border: 1px solid #c4c7c5;
-            border-radius: 12px;
-            padding: 8px 16px;
-            color: #444746;
-            background: transparent;
-            transition: all 0.3s;
-            cursor: pointer;
+        /* انیمیشن تایپ */
+        .typing-animation {
             display: inline-flex;
+            gap: 4px;
             align-items: center;
-            gap: 6px;
-        }
-        
-        .action-chip:hover {
-            background: #e6f0ff;
-            color: #0b57d0;
-            border-color: #0b57d0;
-        }
-
-        .input-area-wrapper {
-            background: #f0f4f9;
-            padding: 20px;
-        }
-
-        .input-box-container {
-            background: #ffffff;
-            border-radius: 30px;
-            border: 1px solid #dfe6e9;
-            padding: 10px 18px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            transition: all 0.3s;
-        }
-
-        .input-box-container:focus-within {
-            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
-            border-color: #a8c7fa;
         }
 
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: #0b57d0;
+            background: #4c51bf;
             border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
+            animation: bounce 1.4s infinite ease-in-out;
         }
+
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        
+
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
             40% { transform: scale(1); }
         }
 
-        .gradient-text {
-            background: linear-gradient(to right, #4285f4, #9b72cb, #d96570);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
+        /* اسکرول‌بار سفارشی */
+        #chat-container::-webkit-scrollbar { width: 8px; } 
+        #chat-container::-webkit-scrollbar-track { background: #1a1a1a; }
+        #chat-container::-webkit-scrollbar-thumb { 
+            background: #4c51bf;
+            border-radius: 10px; 
         }
 
-        .insta-link {
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.9rem;
+        /* استایل ورودی و دکمه ارسال */
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.3);
         }
-        .insta-link:hover {
-            color: #E1306C;
-            transform: translateY(-1px);
+
+        .send-button {
+            background: linear-gradient(135deg, #4c51bf 0%, #6a3299 100%);
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 81, 191, 0.5);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* دکمه‌های کنشی (مانند خلاصه) */
+        .action-btn {
+            background: rgba(76, 81, 191, 0.1);
+            border: 1px solid rgba(76, 81, 191, 0.3);
+            color: #4c51bf;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background: rgba(76, 81, 191, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        input::placeholder {
-            font-family: 'B Titr Bold', sans-serif;
-            opacity: 0.6;
-        }
-        input {
-            font-family: 'B Titr Bold', sans-serif !important;
+        .source-link {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
-
-    <header class="flex items-center justify-between px-6 py-4 bg-[#f0f4f9] z-10 shadow-sm">
-        <div class="flex items-center gap-3">
-            <span class="text-2xl">✨</span>
-            <h1 class="text-xl text-slate-700 gradient-text">چت‌بات دانشجویی</h1>
-        </div>
-        <button onclick="showAbout()" class="text-slate-500 hover:text-slate-800 transition">
-            <i class="fas fa-info-circle text-xl"></i>
-        </button>
-    </header>
-
-    <div id="chat-container" class="main-container overflow-y-auto px-4 pb-4 space-y-6">
-        <div class="flex flex-col items-start w-full gap-2 mt-4">
-            <div class="bot-message message-bubble">
-                <p class="mb-3 text-lg">👋 سلام! من دستیار هوشمند شما هستم.</p>
-                <p>چطور می‌توانم در درس‌ها، پروژه‌ها یا برنامه‌نویسی به شما کمک کنم؟</p>
-            </div>
-            <div class="flex gap-3 mr-2 flex-wrap">
-                <button class="action-chip" onclick="fillInput('خلاصه درس رو برام توضیح بده')">📚 توضیح درس</button>
-                <button class="action-chip" onclick="fillInput('یه کد پایتون برام بنویس که...')">💻 کدنویسی</button>
-                <button class="action-chip" onclick="fillInput('سوالات امتحانی بده')">📝 آزمون</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="input-area-wrapper">
-        <div class="max-w-3xl mx-auto w-full">
-            
-            <div id="message-box" class="hidden text-sm font-medium text-blue-600 mb-3 mr-4 flex items-center gap-2">
-                <div class="flex space-x-1 space-x-reverse">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+    <div class="chat-container-main">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-4 relative z-10 shadow-lg">
+            <div class="max-w-5xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-2xl">
+                        🎓
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">دستیار هوشمند دانشجویی</h1>
+                        <div class="flex items-center gap-2 text-sm opacity-90">
+                            <div class="status-dot"></div>
+                            <span>آنلاین • مدل Gemini-Flash</span>
+                        </div>
+                    </div>
                 </div>
-                <span>در حال نوشتن...</span>
-            </div>
-
-            <div class="input-box-container">
-                <input type="text" id="user-input" placeholder="اینجا سوال بپرسید..."
-                    class="flex-grow bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 px-2 py-3 text-base"
-                    onkeydown="if(event.key === 'Enter') sendMessage()" autocomplete="off">
-                
-                <button onclick="sendMessage()" id="send-button"
-                    class="mr-2 p-3 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition duration-200">
-                    <i class="fas fa-paper-plane text-xl transform rotate-180"></i>
+                <button onclick="showInfo()" class="p-2 hover:bg-white/10 rounded-lg transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                 </button>
             </div>
+        </header>
 
-            <div class="mt-5 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-                <span>ساخته شده با ❤️ توسط</span>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <a href="https://www.instagram.com/moha0fazeli/" target="_blank" class="insta-link">
-                        <i class="fab fa-instagram"></i> محمدرضا فاضلی
-                    </a>
-                    <span class="hidden sm:inline text-slate-300">|</span>
-                    <a href="https://www.instagram.com/mohammad10.06/" target="_blank" class="insta-link">
-                        <i class="fab fa-instagram"></i> محمد ابراهیم تاجیک
-                    </a>
+        <!-- Chat Area -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex">
+                    <div class="bot-message message-bubble">
+                        <div class="font-semibold mb-2">👋 سلام دانشجو! </div>
+                        من دستیار هوشمند شما، **آریو** هستم! با لحنی دوستانه و پرانرژی به سوالات شما جواب میدم. 🚀<br><br>
+                        من می‌تونم در این موارد بهت کمک کنم:<br>
+                        📚 **سوالات درسی:** از مبانی ریاضی تا آخرین مقالات علمی.<br>
+                        💻 **برنامه‌نویسی:** اشکال‌زدایی کد، توضیح مفاهیم و نمونه کد.<br>
+                        🎯 **راهنمایی‌های عمومی:** برنامه‌ریزی درسی، مدیریت زمان و غیره.<br><br>
+                        فقط کافیه سوالت رو بپرسی. من آماده‌ام! 😉
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="about-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm" onclick="hideAbout(event)">
-        <div class="bg-white rounded-2xl p-7 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
-            <h2 class="text-2xl mb-4 gradient-text">درباره چت‌بات</h2>
-            <p class="text-gray-600 text-base leading-relaxed mb-6">
-                این چت‌بات دانشجویی برای کمک به یادگیری، حل مسائل درسی، کدنویسی و آمادگی امتحان طراحی شده است.
-            </p>
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-6">
-                <p class="text-sm text-gray-700 mb-3 font-medium">تیم سازنده:</p>
-                <div class="flex flex-col gap-3">
-                    <a href="https://www.instagram.com/moha0fazeli/" target="_blank" class="flex items-center gap-3 text-gray-700 hover:text-pink-600 transition">
-                        <i class="fab fa-instagram text-lg"></i> محمدرضا فاضلی
-                    </a>
-                    <a href="https://www.instagram.com/mohammad10.06/" target="_blank" class="flex items-center gap-3 text-gray-700 hover:text-pink-600 transition">
-                        <i class="fab fa-instagram text-lg"></i> محمد ابراهیم تاجیک
-                    </a>
+        <!-- Input Area -->
+        <footer class="border-t border-gray-800 bg-[#1a1a1a] p-4">
+            <div class="max-w-5xl mx-auto">
+                <!-- Message/Typing Box -->
+                <div id="message-box" class="hidden mb-3 p-3 bg-indigo-900/20 border border-indigo-500/30 rounded-lg text-indigo-300 text-sm flex items-center justify-center gap-3">
+                    <div class="typing-animation">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    <span>در حال جستجو و فکر کردن...</span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="سوالت رو بپرس (مثلاً: معادله دیفرانسیل چیست؟)..."
+                        class="input-glow flex-1 bg-[#2a2a2a] text-white border border-gray-700 rounded-2xl px-5 py-3.5 focus:outline-none focus:border-indigo-500 transition"
+                        onkeydown="if(event.key === 'Enter') sendMessage()"
+                    >
+                    
+                    <button 
+                        onclick="sendMessage()" 
+                        id="send-button"
+                        class="send-button text-white p-3.5 rounded-2xl transition duration-300 ease-in-out"
+                        title="ارسال (Enter)"
+                    >
+                        <!-- Send Icon -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="mt-3 text-center text-xs text-gray-500 space-y-1">
+                    <div>
+                        توسعه داده شده توسط **محمدرضا فاضلی** و **محمد ابراهیم تاجیک**
+                    </div>
+                    <div>
+                        از مدل‌های هوش مصنوعی Gemini برای پاسخ‌دهی استفاده شده است.
+                    </div>
                 </div>
             </div>
-            <button onclick="hideAbout()" class="w-full py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition font-medium">
-                بستن
+        </footer>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onclick="hideInfo(event)">
+        <div class="bg-[#1a1a1a] border border-gray-800 rounded-2xl p-8 max-w-md w-full" onclick="event.stopPropagation()">
+            <h2 class="text-2xl font-bold text-white mb-4">درباره دستیار هوشمند دانشجویی</h2>
+            <p class="text-gray-300 leading-relaxed mb-4">
+                این چت‌بات با استفاده از قدرت مدل‌های **Gemini** ساخته شده است. این مدل‌ها به طور خاص برای کمک به دانشجویان در مسائل درسی، تحقیق و برنامه‌ریزی طراحی شده‌اند.
+            </p>
+            <div class="bg-indigo-900/20 border border-indigo-500/30 p-4 rounded-xl mb-4">
+                <p class="text-sm text-gray-300">
+                    <strong class="text-white">مدل مورد استفاده:</strong> Gemini 2.5 Flash<br>
+                    <strong class="text-white">قابلیت‌ها:</strong> جستجوی لحظه‌ای وب، خلاصه‌سازی و پاسخگویی چندمنظوره.
+                </p>
+            </div>
+            <button onclick="hideInfo()" class="mt-3 w-full py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-xl transition font-semibold">
+                متوجه شدم
             </button>
         </div>
     </div>
@@ -247,64 +288,231 @@
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const messageBox = document.getElementById('message-box');
-        const aboutModal = document.getElementById('about-modal');
+        const infoModal = document.getElementById('info-modal');
 
-        function showAbout() { aboutModal.classList.remove('hidden'); }
-        function hideAbout(event) {
-            if (!event || event.target === aboutModal) aboutModal.classList.add('hidden');
+        // پیکربندی API (apiKey باید خالی باشد تا در محیط Canvas کار کند)
+        const apiKey = ""; 
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        // Utility Functions
+        function showInfo() {
+            infoModal.classList.remove('hidden');
         }
 
-        function fillInput(text) {
-            userInput.value = text;
-            userInput.focus();
+        function hideInfo(event) {
+            if (!event || event.target === infoModal) {
+                infoModal.classList.add('hidden');
+            }
         }
 
-        function displayMessage(text, sender) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'flex flex-col w-full mb-4';
+        function renderMarkdown(text) {
+            let html = text;
+            
+            // 1. Bold (**) - باید قبل از تبدیل خطوط جدید انجام شود.
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // 2. Italic (*) - باید قبل از تبدیل خطوط جدید انجام شود.
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // 3. Newlines - تبدیل خطوط جدید به <br> برای نمایش چند خطی.
+            html = html.replace(/\n/g, '<br>');
+            
+            // 4. Links - تبدیل لینک‌های خام به تگ <a>.
+            html = html.replace(/(https?:\/\/[^\s<>]+)/g, '<a href="$1" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">$1</a>');
+            
+            return html;
+        }
 
-            const bubble = document.createElement('div');
-            bubble.className = `message-bubble ${sender === 'user' ? 'user-message' : 'bot-message'}`;
-            bubble.textContent = text; // فقط متن ساده، بدون markdown
+        // Display a message (text and optional sources)
+        function displayMessage(text, sender, sources = []) {
+            const container = chatContainer.querySelector('.max-w-5xl') || chatContainer;
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = 'flex';
 
-            wrapper.appendChild(bubble);
-            chatContainer.appendChild(wrapper);
+            if (sender === 'user') {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble user-message';
+                bubble.textContent = text;
+                messageWrapper.appendChild(bubble);
+            } else {
+                const botWrapper = document.createElement('div');
+                botWrapper.className = 'flex flex-col items-start gap-2 w-full';
+
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble bot-message';
+                bubble.innerHTML = renderMarkdown(text);
+                
+                botWrapper.appendChild(bubble);
+
+                // Add sources if available
+                if (sources.length > 0) {
+                    const sourceDiv = document.createElement('div');
+                    sourceDiv.className = 'flex flex-wrap gap-2 mr-4 mt-1';
+                    sources.slice(0, 3).forEach((source, index) => {
+                        const link = document.createElement('a');
+                        link.href = source.uri;
+                        link.target = '_blank';
+                        link.className = 'source-link hover:text-white transition';
+                        link.innerHTML = `
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.868a4 4 0 00-.05-5.656l-4-4a4 4 0 00-5.66 0m12.678 12.678l-1.101 1.102"/>
+                            </svg>
+                            <span>${source.title || `منبع ${index + 1}`}</span>
+                        `;
+                        sourceDiv.appendChild(link);
+                    });
+                    botWrapper.appendChild(sourceDiv);
+                }
+
+                // Add action buttons (like summarize)
+                const actions = document.createElement('div');
+                actions.className = 'flex gap-2 mr-4 mt-2';
+
+                const sumBtn = document.createElement('button');
+                sumBtn.className = 'action-btn';
+                sumBtn.innerHTML = '📄 خلاصه کردن';
+                sumBtn.onclick = () => summarize(bubble.textContent);
+                actions.appendChild(sumBtn);
+
+                botWrapper.appendChild(actions);
+                messageWrapper.appendChild(botWrapper);
+            }
+
+            container.appendChild(messageWrapper);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
+        
+        // Fetch wrapper with exponential backoff
+        async function fetchWithBackoff(url, options, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) throw error;
+                    // Will retry on network/parsing errors too
+                }
+            }
+        }
 
-        let isSending = false;
 
         async function sendMessage() {
-            if (isSending) return;
             const message = userInput.value.trim();
             if (!message) return;
 
             displayMessage(message, 'user');
             userInput.value = '';
-            
-            isSending = true;
             userInput.disabled = true;
             sendButton.disabled = true;
             messageBox.classList.remove('hidden');
 
-            // شبیه‌سازی تأخیر (مثل وقتی که منتظر پاسخ API هستیم)
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const systemPrompt = "شما یک دستیار هوشمند و جذاب دانشجویی هستید که به زبان فارسی و با لحنی دوستانه و فان پاسخ می‌دهید. در پاسخ‌های خود می‌توانید از ایموجی‌های مرتبط استفاده کنید. هدف شما کمک به دانشجو در امور تحصیلی، برنامه‌نویسی، و اطلاعات عمومی است. برای پاسخ‌های دقیق، حتما از جستجوی گوگل استفاده کنید.";
+            const userQuery = message;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }], // فعال‌سازی جستجوی گوگل
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
 
-            // اینجا هیچ پاسخی از بات نمایش داده نمی‌شود
-            // اگر بعداً API اضافه کردی، اینجا کد فراخوانی API رو بذار
+            try {
+                const response = await fetchWithBackoff(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                let responseText = "متأسفانه پاسخی از مدل دریافت نشد.";
+                let sources = [];
 
-            isSending = false;
-            userInput.disabled = false;
-            sendButton.disabled = false;
-            messageBox.classList.add('hidden');
-            userInput.focus();
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    responseText = candidate.content.parts[0].text;
+                    
+                    // استخراج منابع (Grounding Sources)
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                }
+                
+                displayMessage(responseText, 'bot', sources);
+
+            } catch (err) {
+                console.error("خطا در ارسال پیام به API:", err);
+                displayMessage('⚠️ خطا در اتصال به دستیار! اتصال اینترنت خود را بررسی کنید.', 'bot');
+            } finally {
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                messageBox.classList.add('hidden');
+                userInput.focus();
+            }
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') hideAbout();
-        });
-        
+        // Function to summarize a previous bot message
+        async function summarize(text) {
+            if (text.length < 50) {
+                displayMessage('⚠️ متن برای خلاصه‌سازی خیلی کوتاهه! (حداقل ۵۰ کاراکتر)', 'bot');
+                return;
+            }
+            
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            messageBox.classList.remove('hidden');
+            
+            const systemPrompt = "شما یک دستیار خلاصه‌ساز هستید. متن داده شده را به زبان فارسی و در یک یا دو پاراگراف کوتاه، مفید و ساده خلاصه کنید. پاسخ خود را با **📝 خلاصه:** شروع کنید.";
+            const userQuery = `خلاصه‌ کن: ${text}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            try {
+                const response = await fetchWithBackoff(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text || 'متأسفانه در خلاصه‌سازی خطا رخ داد.';
+
+                displayMessage(responseText, 'bot');
+
+            } catch (err) {
+                console.error("خطا در خلاصه‌سازی:", err);
+                displayMessage('⚠️ خطا در خلاصه‌سازی!', 'bot');
+            } finally {
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                messageBox.classList.add('hidden');
+                userInput.focus();
+            }
+        }
+
+
         window.onload = () => userInput.focus();
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideInfo(); });
     </script>
 </body>
 </html>
